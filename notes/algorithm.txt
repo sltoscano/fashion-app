@@ -1,0 +1,39 @@
+Steve - 2/24/2010
+
+Here is some information I put together doing a little research tonight:
+
+http://www.katsbits.com/tutorials/blender/setting-up-and-using-ik-armatures.php
+I think we can use Blender's Automatic IK on 3d models and through a genetic algorithm (GA) continuously apply movement to the model until it has a close match to the 2d image.  Here's the general idea:
+
+1) GA is fed adjustable bones in the 3d model
+2) GA moves each bone through the Automatic IK system so that its constrained to the inverse kinematics setup in the 3d model
+3) After each movement take a snapshot of the rendered scene with a white background
+4) compare that snapshot with the 2d image of the clothing from the retailer website (the models usually take photos with a white backdrop)
+5) store the similarity as some sort of percentage.
+6) go back to step 2 if the percentage is not 100%.
+6) the GA stops when the percentage is 100% match.
+
+Obviously it would never hit 100% we can pick a good percentage to stop on. If there are centain images that take longer than a few minutes we could stop processing, log it and move on.  Later we could look at the problematic images by hand to see why the GA had a hard time matching it.
+
+I have source code for a simple GA.  I don't know if Blender exposes APIs to do the Automatic IK so I'm not sure how I could do it through code.  But if there was something like that then I could hook it up to the GA code I have and run it.
+
+I read some stuff about image recognition but it looks like a hard problem (i.e. research papers written on the problem). I want to see if we can come up with a simple brute force mechanism that could get maybe 60% of the way.  It doesn't have to be perfect.
+
+Once we have a close match we would need to "cut" the clothing out of the 2d image and superimpose it onto the 3d image thats now in the correct position.  I don't want to make a texture from the 2d image - i don't think it would look realistic and might even get distorted to the point where you don't even recognize the outfit.  I would like to keep the detail from the original 2d image.
+
+This is why images from forever21 are good because they always have at least front view, side view, and back view.  Our final 3d image to the user would just be three 2d images, one for each side.
+
+With this method we could save the bone positions of the 3d model and apply them to other 3d models (i.e. different body types).  We could have any number of these since the GA already did the hard work of pose estimation.
+
+There would need to be some stretching or shrinking of the 2d outfit depending on the 3d model chosen (i.e. plus size model would have to stretch the outfit).
+
+From this I see three specific components:
+1) Movement Tool that calls into the Blender APIs to move bones of a loaded 3d model.
+2) GA that can feed movements to the tool and get back a rendered image of the 3d model in the new position.
+3) Diff Tool that can diff the rendered image with the model image (probably can do monochrome since we only care about pose).
+4) Cropping tool that can cut out the outfit from the 2d image of the retailer
+5) Fitting tool that can transform the outfit to "fit" the new image created by the Movement Tool (this could be manually done by the users through the UI - since this might be hard to automate)
+
+I think these are all solvable problems.
+
+-Steve
