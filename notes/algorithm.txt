@@ -36,5 +36,4 @@ From this I see three specific components:
 
 I think these are all solvable problems.
 
-
 -Steve
