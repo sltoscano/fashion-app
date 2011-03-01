@@ -1,0 +1,9 @@
+In order to build and run this project you need to install OpenCV from here:
+http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.2/
+
+download the following file:
+OpenCV-2.2.0-win32-vs2010.exe
+
+Make sure you select OpenCV binaries to be added to the path during install.
+
+The project assumes your OpenCV install will be in c:\OpenCV2.2
