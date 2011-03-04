@@ -67,10 +67,11 @@ void graphcut(Mat& featureVec, Mat& im, int num_lables) {
 			}
 		}
 
-		Mat d = _d(Rect(0,0,_d.cols,count));
+		const Mat d = _d(Rect(0,0,_d.cols,count));
 
 		Mat covar;
-		calcCovarMatrix(d,covar,Mat(),CV_COVAR_NORMAL+CV_COVAR_ROWS,CV_32F);
+		Mat tmp = Mat();
+		calcCovarMatrix(d,covar,tmp,CV_COVAR_NORMAL+CV_COVAR_ROWS,CV_32F);
 
 		Mat icv = covar.inv();
 		Mat centerRepeat;
@@ -200,7 +201,7 @@ void graphcut(Mat& featureVec, Mat& im, int num_lables) {
 }
 
 
-void graphcut1(Mat& im, Mat& probs, Mat& dx, Mat& dy,int num_lables,Mat& lables = Mat()) {
+void graphcut1(Mat& im, Mat& probs, Mat& dx, Mat& dy,int num_lables,Mat& lables /*= Mat()*/) {
 	GCoptimizationGridGraph gc(im.cols,im.rows,num_lables);
 
 	int N = im.cols*im.rows;
@@ -433,11 +434,11 @@ void doEM3D(Mat& _im, Mat& probs,int num_models = 2,int num_gaussians = 3, bool 
  * if useRanges is true, use the mouse to define ranges, else use the labeling from lables 
  * to train the GMM
  */
-void doEM1D(Mat& _im, Mat& probs,int num_models = 2,bool useRanges = true,Mat& lables = Mat()) {
+void doEM1D(Mat& _im, Mat& probs,int num_models = 2,bool useRanges = true,Mat lables = Mat()) {
 	//Mat im; cvtColor(_im,im,CV_RGB2HSV);
 	Mat im = _im;
 
-	vector<vector<CvEM>> model(num_models);
+	vector<vector<CvEM> > model(num_models);
 	for(int i=0;i<num_models;i++) {
 		model[i] = vector<CvEM>(3);
 	}
@@ -445,7 +446,7 @@ void doEM1D(Mat& _im, Mat& probs,int num_models = 2,bool useRanges = true,Mat& l
 
 	imshow("tmp1",im);
 
-	vector<vector<Mat>> samples(num_models);
+	vector<vector<Mat> > samples(num_models);
 	for(int i=0;i<num_models;i++) samples[i]=vector<Mat>(3);
 	while(true) {
 		if(useRanges) {
@@ -471,7 +472,8 @@ void doEM1D(Mat& _im, Mat& probs,int num_models = 2,bool useRanges = true,Mat& l
 		for(int i=0;i<num_models;i++) {
 			for(int c=0;c<3;c++) {
 				model[i][c].clear();
-				model[i][c].train(samples[i][c],Mat(),ps,NULL);
+				Mat tmp=Mat();
+				model[i][c].train(samples[i][c],tmp,ps,NULL);
 				//m_probs[i] = model[i].get_probs();
 			}
 
@@ -579,7 +581,7 @@ int main(int argc, char** argv) {
 	{
 		Mat _tmpLabels = lables.reshape(1,im.rows);
 		//find connected components in hair and face masks
-		vector<vector<Point>> contours;
+		vector<vector<Point> > contours;
 		for(int itr=0;itr<2;itr++) {
 			Mat mask = (_tmpLabels == itr);
 
