@@ -6,3 +6,6 @@ outfit-viewer:
 
 screen-scrapers:
 	Scripts that parse the retailer websites for images to download. These scripts also generate metadata for each outfit downloaded. The metadata is to be used by the view to display information such as price, product id, store, etc.
+
+image-segmentation:
+	Implementations of image recognition and graph cutting.
