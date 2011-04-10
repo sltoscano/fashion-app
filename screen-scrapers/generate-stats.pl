@@ -40,6 +40,10 @@ while ($line = <FILE>)
 			{
 				next if ($line !~ /\<p\>(.+)\<br\>/);
 				my $name = $1;
+				if ($name =~ /\<a href\=\".+\" rel\=\".+\" class\=\"url\"\>(.+)\<\/a\>/)
+				{
+					$name = $1;
+				}
 				$users++ if not defined($entries{$name});
 
 				while ($line = <FILE>)
@@ -53,6 +57,7 @@ while ($line = <FILE>)
 					$contestant->{"Last_ID"} = $last_id;					
 					$entries{$name} = $contestant;
 
+					#$time =~ s/, 2011//;
 					$time =~ s/ 2011 //;
 					print DB "$name,$time,$last_id\n";
 					last;
