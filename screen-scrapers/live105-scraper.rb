@@ -6,20 +6,6 @@ require 'rubygems'
 require 'mechanize'
 require 'net/smtp'
 
-def send_email(from, from_alias, to, to_alias, subject, message)
-	msg = <<END_OF_MESSAGE
-From: #{from_alias} <#{from}>
-To: #{to_alias} <#{to}>
-Subject: #{subject}
-	
-#{message}
-END_OF_MESSAGE
-	
-	Net::SMTP.start('mail.trisourcesoftware.com', 25, 'trisourcesoftware.com', 'test@trisourcesoftware.com', 'test123!!!', :login) do |smtp|
-		smtp.send_message msg, from, to
-	end
-end
-
 begin
 
   puts "Begin mechanize script"
