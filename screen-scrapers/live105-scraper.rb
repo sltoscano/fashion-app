@@ -66,7 +66,7 @@ begin
   agent = init_browser()
   page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
  
-  base_sleep_amount = 10;
+  base_sleep_amount = 5;
   rand_amount = 5
   comment_no = 0
   i = 0
