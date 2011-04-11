@@ -15,24 +15,32 @@ def print(x)
   $logger << x + "\r\n"
 end
 
-def init_browser(val)
+def init_browser()
   agent = Mechanize.new
-  agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.' + val.to_s
+  agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.0'
   agent.max_history = 1
-  agent.open_timeout = 300
-  agent.read_timeout = 300
-  agent.keep_alive = 300
+  agent.open_timeout = 3000
+  agent.read_timeout = 3000
+  agent.keep_alive = 3000
   return agent
 end
 
 begin
+
+  if ARGV[0] == nil
+    print "Error: first arg must be an integer"
+    exit
+  end
 
   print "Begin mechanize script"
 
   quotes = []
 
   print "Loading quotes"
-  exit unless File.exist?("quotes.txt")
+  unless File.exist?("quotes.txt")
+    print "Error: couldn't find quotes.txt"
+    exit
+  end
   i = 0
   
   quotes = IO.readlines("quotes.txt")
@@ -55,24 +63,15 @@ begin
   end
   print "done"
 
-  agent = init_browser(0)
+  agent = init_browser()
+  page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
  
+  base_sleep_amount = 10;
   rand_amount = 5
   comment_no = 0
   i = 0
 
   while true
-
-    # Every 3 min do a longer wait and refresh page
-    base_sleep_amount = (i % 3 == 0) ? 60*2 : 10;
-    sleep_val = base_sleep_amount.to_i + rand(rand_amount)
-    print "Sleeping for " + sleep_val.to_s + " sec"
-    print ""
-    sleep sleep_val.to_i
-
-    if i % 3 == 0
-      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
-    end
     
     if i == len
       print "Randomizing " + len.to_s + " quotes"
@@ -89,17 +88,16 @@ begin
     print "Time is " + Time.now.to_s
 
     begin
+      sleep 5
       t1 = Time.now
 
-      page = page.form_with(:action => 'http://live105.radio.com/wp-comments-post.php') do |comment_form|
-        comment_form.field_with(:name => "author").value = "Steve"
-        comment_email = "stoscano+coachellacontest" + i + "@hotmail.com"
-        comment_form.field_with(:name => "email").value = comment_email
-        print "Submitting email \"" + comment_email + "\""
-        comment_value = quotes[i]
-        comment_form.field_with(:name => "comment").value = comment_value
-        print "Submitting comment \"" + comment_value + "\""
-      end.submit
+      comment_form = page.form_with(:action => 'http://live105.radio.com/wp-comments-post.php')
+      comment_form.field_with(:name => "author").value = "Steve"
+      comment_form.field_with(:name => "email").value = "stoscano@hotmail.com"
+      comment_value = (1000+i).to_s + ". " + quotes[i]
+      comment_form.field_with(:name => "comment").value = comment_value
+      print "Submitting comment \"" + comment_value + "\""
+      page = agent.submit comment_form
 
       if page == nil
         raise "Form submit failed"
@@ -121,16 +119,22 @@ begin
 
       $failures = 0
 
+      sleep_val = base_sleep_amount.to_i + rand(rand_amount)
+      print "Sleeping for " + sleep_val.to_s + " sec"
+      print ""
+      sleep sleep_val.to_i
+
     rescue Exception => e
       # Retry
       $failures = $failures + 1
       # linear backoff
-      sleep_val = 60 * 6 * $failures
+      sleep_val = 30 * $failures
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
       sleep sleep_val.to_i
       # reestablish connection
-      agent = init_browser(i)
+      agent = init_browser()
+      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
     end
   end
 end
