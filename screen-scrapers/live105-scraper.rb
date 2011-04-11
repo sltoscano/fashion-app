@@ -18,10 +18,10 @@ end
 def init_browser(val)
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.' + val.to_s
-  agent.max_history = 0
+  agent.max_history = 1
   agent.open_timeout = 300
   agent.read_timeout = 300
-  agent.keep_alive = false
+  agent.keep_alive = 300
   return agent
 end
 
@@ -57,13 +57,23 @@ begin
 
   agent = init_browser(0)
  
-  base_sleep_amount = 10
   rand_amount = 5
   comment_no = 0
   i = 0
 
   while true
 
+    # Every 3 min do a longer wait and refresh page
+    base_sleep_amount = (i % 3 == 0) ? 60*2 : 10;
+    sleep_val = base_sleep_amount.to_i + rand(rand_amount)
+    print "Sleeping for " + sleep_val.to_s + " sec"
+    print ""
+    sleep sleep_val.to_i
+
+    if i % 3 == 0
+      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
+    end
+    
     if i == len
       print "Randomizing " + len.to_s + " quotes"
       for c in 0..len
@@ -80,8 +90,6 @@ begin
 
     begin
       t1 = Time.now
-
-      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
 
       page = page.form_with(:action => 'http://live105.radio.com/wp-comments-post.php') do |comment_form|
         comment_form.field_with(:name => "author").value = "Steve"
@@ -108,11 +116,6 @@ begin
       secs = (t2 - t1)
 
       print "Time elapsed = " + secs.to_s + " sec"
-
-      sleep_val = base_sleep_amount.to_i + rand(rand_amount)
-      print "Sleeping for " + sleep_val.to_s + " sec"
-      print ""
-      sleep sleep_val.to_i
 
       $failures = 0
 
