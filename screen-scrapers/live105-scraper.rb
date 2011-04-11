@@ -94,7 +94,7 @@ begin
       comment_form = page.form_with(:action => 'http://live105.radio.com/wp-comments-post.php')
       comment_form.field_with(:name => "author").value = "Steve"
       comment_form.field_with(:name => "email").value = "stoscano@hotmail.com"
-      comment_value = (1000+i).to_s + ". " + quotes[i]
+      comment_value = (ARGV[0]+i).to_s + ". " + quotes[i]
       comment_form.field_with(:name => "comment").value = comment_value
       print "Submitting comment \"" + comment_value + "\""
       page = agent.submit comment_form
