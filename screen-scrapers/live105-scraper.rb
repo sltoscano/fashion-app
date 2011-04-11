@@ -15,6 +15,16 @@ def print(x)
   $logger << x + "\r\n"
 end
 
+def init_browser()
+  agent = Mechanize.new
+  agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7'
+  agent.max_history = 0
+  agent.open_timeout = 300
+  agent.read_timeout = 300
+  agent.keep_alive = false
+  return agent
+end
+
 begin
 
   print "Begin mechanize script"
@@ -45,13 +55,7 @@ begin
   end
   print "done"
 
-  agent = Mechanize.new
-  agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7'
-  agent.max_history = 0
-  agent.open_timeout = 300
-  agent.read_timeout = 300
-  agent.keep_alive = false
-
+  agent = init_browser()
   page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
 
   base_sleep_amount = 10
@@ -120,8 +124,9 @@ begin
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
       sleep sleep_val.to_i
-      page = nil
-      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
+      # reestablish connection
+      agent = init_browser()
+      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets"
     end
   end
 end
