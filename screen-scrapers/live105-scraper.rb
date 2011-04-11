@@ -120,7 +120,7 @@ begin
       # Retry
       $failures = $failures + 1
       # linear backoff
-      sleep_val = 120 * $failures
+      sleep_val = 60 * 6 * $failures
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
       sleep sleep_val.to_i
