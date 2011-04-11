@@ -103,17 +103,17 @@ begin
 
       print "Time elapsed = " + secs.to_s + " sec"
 
-      sleep_val = base_sleep_amount + rand(rand_amount)
+      sleep_val = base_sleep_amount.to_i + rand(rand_amount)
       print "Sleeping for " + sleep_val.to_s + " sec"
       print ""
-      sleep sleep_val
+      sleep sleep_val.to_i
 
     rescue Exception => e
       # Retry
-      sleep_val = base_sleep_amount + rand(rand_amount)
+      sleep_val = base_sleep_amount.to_i + rand(rand_amount)
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
-      sleep sleep_val
+      sleep sleep_val.to_i
     end
   end
 end
