@@ -93,7 +93,9 @@ begin
 
       page = page.form_with(:action => 'http://live105.radio.com/wp-comments-post.php') do |comment_form|
         comment_form.field_with(:name => "author").value = "Steve"
-        comment_form.field_with(:name => "email").value = "stoscano@hotmail.com"
+        comment_email = "stoscano+coachellacontest" + i + "@hotmail.com"
+        comment_form.field_with(:name => "email").value = comment_email
+        print "Submitting email \"" + comment_email + "\""
         comment_value = quotes[i]
         comment_form.field_with(:name => "comment").value = comment_value
         print "Submitting comment \"" + comment_value + "\""
