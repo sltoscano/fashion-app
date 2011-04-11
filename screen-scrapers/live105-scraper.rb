@@ -5,14 +5,22 @@
 require 'rubygems'
 require 'mechanize'
 require 'net/smtp'
+require 'logger'
+
+$logger = Logger.new("scraper.log", shift_age = 'daily')
+
+def print(x)
+  puts x
+  $logger << x + "\r\n"
+end
 
 begin
 
-  puts "Begin mechanize script"
+  print "Begin mechanize script"
 
   quotes = []
 
-  puts "Loading quotes"
+  print "Loading quotes"
   exit unless File.exist?("quotes.txt")
   i = 0
   
@@ -27,14 +35,14 @@ begin
     end
   end
 
-  puts "Randomizing " + len.to_s + " quotes"
+  print "Randomizing " + len.to_s + " quotes"
   for c in 0..len
     temp = quotes[c]
     pos = rand(len)
     quotes[c] = quotes[pos]
     quotes[pos] = temp
   end
-  puts "done"
+  print "done"
 
   agent = Mechanize.new
   agent.user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7'
@@ -45,26 +53,26 @@ begin
 
   page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
 
-  base_sleep_amount = 60*15
-  rand_amount = 60*10
+  base_sleep_amount = 10
+  rand_amount = 5
   comment_no = 0
   i = 0
 
-  while comment_no.to_i < 40050
+  while true
 
     if i == len
-      puts "Randomizing " + len.to_s + " quotes"
+      print "Randomizing " + len.to_s + " quotes"
       for c in 0..len
         temp = quotes[c]
         pos = rand(len)
         quotes[c] = quotes[pos]
         quotes[pos] = temp
       end
-      puts "done"
+      print "done"
     end
 
-    puts "Attempt number " + i.to_s
-    puts "Time is " + Time.now.to_s
+    print "Attempt number " + i.to_s
+    print "Time is " + Time.now.to_s
 
     begin
       t1 = Time.now
@@ -74,7 +82,7 @@ begin
         comment_form.field_with(:name => "email").value = "stoscano@hotmail.com"
         comment_value = quotes[i]
         comment_form.field_with(:name => "comment").value = comment_value
-        puts "Submitting comment \"" + comment_value + "\""
+        print "Submitting comment \"" + comment_value + "\""
       end.click_button
 
       if page == nil
@@ -83,37 +91,28 @@ begin
 
       i = i + 1
 
-      puts "Uri = " + page.uri.to_s
+      print "Uri = " + page.uri.to_s
       if page.uri.to_s =~ /\#comment\-(\d+)/
         comment_no = $1
       else
         raise "Uri parse failed"
       end
 
-      if comment_no.to_i > 39000
-        base_sleep_amount = 30
-        rand_amount = 30
-        if comment_no.to_i > 39500
-          base_sleep_amount = 5
-          rand_amount = 1
-        end
-      end
-
       t2 = Time.now
       secs = (t2 - t1)
 
-      puts "Time elapsed = " + secs.to_s + " sec"
+      print "Time elapsed = " + secs.to_s + " sec"
 
       sleep_val = base_sleep_amount + rand(rand_amount)
-      puts "Sleeping for " + sleep_val.to_s + " sec"
-      puts ""
+      print "Sleeping for " + sleep_val.to_s + " sec"
+      print ""
       sleep sleep_val
 
     rescue Exception => e
       # Retry
       sleep_val = base_sleep_amount + rand(rand_amount)
-      puts "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
-      puts ""
+      print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
+      print ""
       sleep sleep_val
     end
   end
