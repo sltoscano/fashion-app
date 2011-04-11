@@ -8,6 +8,7 @@ require 'net/smtp'
 require 'logger'
 
 $logger = Logger.new("scraper.log", shift_age = 'daily')
+$failures = 0
 
 def print(x)
   puts x
@@ -108,12 +109,18 @@ begin
       print ""
       sleep sleep_val.to_i
 
+      $failures = 0
+
     rescue Exception => e
       # Retry
+      $failures = $failures + 1
       sleep_val = base_sleep_amount.to_i + rand(rand_amount)
+      # linear backoff
+      sleep_val = sleep_val.to_i * $failures
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
       sleep sleep_val.to_i
+      page = nil
       page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
     end
   end
