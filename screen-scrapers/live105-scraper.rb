@@ -114,6 +114,7 @@ begin
       print "Exception caught: \"" + e.to_s + "\", retrying in " + sleep_val.to_s + "..."
       print ""
       sleep sleep_val.to_i
+      page = agent.get "http://live105.radio.com/2011/02/21/be-comment-40000-with-the-word-hipster-and-win-coachella-tickets" 
     end
   end
 end
