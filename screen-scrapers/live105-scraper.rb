@@ -130,6 +130,13 @@ begin
       sleep_val = (base_sleep_amount.to_i + rand(rand_amount)) * $failures
       print "Sleeping " + sleep_val.to_s
       sleep sleep_val.to_i
+      # Write out uncommented comments
+      File.open(comments_file, 'w+') do |f|
+        for c in i..len
+          f.puts test[c]
+        end
+      end
+      exit
     end
   end
 end
