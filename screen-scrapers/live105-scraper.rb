@@ -127,8 +127,9 @@ begin
     rescue Exception => e
       $failures = $failures + 1
       print "Exception caught: \"" + e.to_s + "\""
-      print "Sleeping " + (sleep_val.to_i * $failures).to_s
-      sleep sleep_val.to_i * $failures
+      sleep_val = (base_sleep_amount.to_i + rand(rand_amount)) * $failures
+      print "Sleeping " + sleep_val.to_s
+      sleep sleep_val.to_i
     end
   end
 end
