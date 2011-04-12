@@ -7,6 +7,7 @@ require 'mechanize'
 require 'logger'
 
 $logger = Logger.new("scraper.log", shift_age = 'daily')
+$failures = 0
 
 def print(x)
   puts x
@@ -124,10 +125,10 @@ begin
       sleep sleep_val.to_i
 
     rescue Exception => e
+      $failures = $failures + 1
       print "Exception caught: \"" + e.to_s + "\""
-      print ""
-      # Outer script should respawn the process
-      exit
+      print "Sleeping " + (sleep_val.to_i * $failures).to_s
+      sleep sleep_val.to_i * $failures
     end
   end
 end
