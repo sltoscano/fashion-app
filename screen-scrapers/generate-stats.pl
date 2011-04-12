@@ -81,6 +81,7 @@ while ($line = <FILE>)
 							my $comment = $1;
 							if (length $comment < 60 && $comment !~ /\d+/ && $comment !~ /(.)\1\1\1+/)
 							{
+								$comment =~ s/[^[:print:]]+//g;
 								$comments{$comment} = 1 if ($comment =~ /hipster/i);
 							}
 							last;
@@ -148,3 +149,4 @@ print "MinID = $min_id\n";
 print "Missing = $missing\n";
 print "\n";
 print "DataFile = $data_file\n";
+print "CommentsFile = $comments_file\n";
