@@ -131,9 +131,10 @@ begin
       print "Sleeping " + sleep_val.to_s
       sleep sleep_val.to_i
       # Write out uncommented comments
+      i = i + 1
       File.open(comments_file, 'w+') do |f|
         for c in i..len
-          f.puts test[c]
+          f.puts quotes[c]
         end
       end
       exit
